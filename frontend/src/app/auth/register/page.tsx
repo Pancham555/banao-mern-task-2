@@ -27,12 +27,15 @@ const Register = () => {
   axios.defaults.withCredentials = true;
   const onSubmit = async () => {
     try {
-      const data = await axios.post("http://localhost:5000/api/auth/register", {
-        username: inputs?.username,
-        email: inputs?.email,
-        password: inputs?.password,
-      });
-
+      const data = await axios.post(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/auth/register",
+        {
+          username: inputs?.username,
+          email: inputs?.email,
+          password: inputs?.password,
+        }
+      );
+      localStorage.setItem("username", data.data.username);
       alert(data.data?.message);
       router.push("/");
     } catch (error) {

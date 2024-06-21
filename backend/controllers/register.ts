@@ -42,7 +42,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       })
       .send({
         message: "User created successfully!",
-        jwt: signJwt,
+        username: user.username,
       });
   } catch (error) {
     console.log(error);

@@ -18,14 +18,14 @@ const ResetPassword = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   axios.defaults.withCredentials = true;
-  // console.log(searchParams.get("token"), "params");
 
   const onSubmit = async () => {
     try {
       const sendMail = await axios.post(
-        `http://localhost:5000/api/auth/forgot-password/reset-password/${searchParams.get(
-          "token"
-        )}`,
+        process.env.NEXT_PUBLIC_BACKEND_URL +
+          `/api/auth/forgot-password/reset-password/${searchParams.get(
+            "token"
+          )}`,
         {
           newPassword,
         },

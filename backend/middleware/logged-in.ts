@@ -12,9 +12,9 @@ export default async (req: Request, res: Response, next: NextFunction) => {
 
   // @ts-ignore
   const secret: Secret = process.env.JWT_SECRET;
-  const verifyUser = jswt.verify(jwt, secret);
+  // const verifyUser = jswt.verify(jwt, secret);
 
-  res.send({ authorized: verifyUser });
+  // res.send({ authorized: verifyUser });
   // console.log("passed through middleware");
 
   next();

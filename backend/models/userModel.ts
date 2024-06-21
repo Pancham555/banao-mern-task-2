@@ -1,4 +1,4 @@
-import { Schema, model, connect } from "mongoose";
+import { Schema, model } from "mongoose";
 import bcryptjs from "bcryptjs";
 // 1. Create an interface representing a document in MongoDB.
 interface UserTypes {
@@ -8,11 +8,14 @@ interface UserTypes {
 }
 
 // 2. Create a Schema corresponding to the document interface.
-const userSchema = new Schema<UserTypes>({
-  username: { type: String, required: true, unique: true },
-  email: { type: String, required: true, unique: true },
-  password: { type: String, required: true },
-});
+const userSchema = new Schema<UserTypes>(
+  {
+    username: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+  },
+  { timestamps: true }
+);
 
 userSchema.pre("save", async function (next) {
   try {

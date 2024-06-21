@@ -25,7 +25,7 @@ const Login = () => {
     try {
       // http://localhost:5000
       const data = await axios.post(
-        "http://localhost:5000/api/auth/login",
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/auth/login",
         {
           email_or_username: inputs?.email_or_username,
           password: inputs?.password,
@@ -39,6 +39,7 @@ const Login = () => {
       );
       console.log(data.data);
 
+      localStorage.setItem("username", data.data.username);
       alert(data.data?.message);
       router.push("/");
     } catch (error) {

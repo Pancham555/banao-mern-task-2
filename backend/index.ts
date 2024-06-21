@@ -7,6 +7,7 @@ import register from "./routes/register";
 import logout from "./routes/logout";
 import checkAuth from "./routes/check-auth";
 import forgetPassword from "./routes/forgot-password";
+import posts from "./routes/posts";
 import db from "./db/connect";
 
 dotenv.config();
@@ -31,19 +32,12 @@ app.use(
 //   res.sendFile(__dirname + "/views/index.html");
 // });
 
-// app.get("/login", (req: Request, res: Response) => {
-//   res.sendFile(__dirname + "/views/login.html");
-// });
-
-// app.get("/register", (req: Request, res: Response) => {
-//   res.sendFile(__dirname + "/views/register.html");
-// });
-
 app.use("/api/auth/login", login);
 app.use("/api/auth/register", register);
 app.use("/api/auth/forgot-password", forgetPassword);
 app.use("/api/auth/logout", logout);
 app.use("/api/check-auth", checkAuth);
+app.use("/api/posts", posts);
 
 app.listen(port, () => {
   console.log(`[server]: Server is running at http://localhost:${port}`);

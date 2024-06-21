@@ -51,7 +51,7 @@ export default async (req: Request, res: Response, next: NextFunction) => {
       })
       .send({
         message: "User logged in successfully!",
-        jwt: signJwt,
+        username: isUserExist.username,
       });
   } catch (error) {
     console.log(error);
