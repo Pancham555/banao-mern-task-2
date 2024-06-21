@@ -10,6 +10,7 @@ export default function Home() {
   axios.defaults.withCredentials = true;
   const router = useRouter();
   const [posts, setPosts] = useState<object[]>();
+  const [deleteId, setDeleteId] = useState<string>();
 
   const getPosts = async () => {
     axios.defaults.withCredentials = true;
@@ -27,22 +28,6 @@ export default function Home() {
       console.log(error);
     }
   };
-  // const checkLogin = async () => {
-  //   axios.defaults.withCredentials = true;
-  //   try {
-  //     const check = await axios.get("http://localhost:5000/api/check-auth");
-  //     console.log("check auth", check.data);
-
-  //     if (!check.data.authorized) {
-  //       return setLoginStatus(false);
-  //     }
-
-  //     setLoginStatus(true);
-  //     // setAuthData(check.data.authorized);
-  //   } catch (error) {
-  //     console.log("check auth", error);
-  //   }
-  // };
 
   const Logout = async () => {
     axios.defaults.withCredentials = true;
@@ -58,9 +43,27 @@ export default function Home() {
     }
   };
 
+  const deletePost = async () => {
+    try {
+      const delete_post = await axios.patch(
+        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/posts",
+        {
+          _id: deleteId,
+        }
+      );
+
+      if (delete_post.status === 200) {
+        alert("Post has been deleted");
+        setDeleteId("");
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
     getPosts();
-  }, []);
+  }, [posts, deleteId]);
 
   return (
     <main className="flex p-5 flex-col gap-5">
@@ -74,7 +77,28 @@ export default function Home() {
       </div>
       {posts?.map((data, index) => {
         // @ts-ignore
-        return <Post key={index} {...data} />;
+        return (
+          <Post
+            key={index}
+            // @ts-ignore
+            _id={data._id}
+            // @ts-ignore
+            username={data.username}
+            // @ts-ignore
+            comments={data.comments}
+            // @ts-ignore
+            likedby={data.likedby}
+            // @ts-ignore
+            likes={data.likes}
+            // @ts-ignore
+            post={data.post}
+            setDeleteId={setDeleteId}
+            // {...data}
+            deletePost={(e: string) => {
+              return deletePost();
+            }}
+          />
+        );
       })}
     </main>
   );

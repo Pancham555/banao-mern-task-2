@@ -26,6 +26,8 @@ interface PostTypes {
   likedby: string[];
   comments: CommentTypes[];
   key: number;
+  deletePost: Function;
+  setDeleteId: Function;
 }
 
 interface CommentTypes {
@@ -34,9 +36,11 @@ interface CommentTypes {
   comment: string;
 }
 
-const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
+const Post = ({ _id, username, deletePost, setDeleteId }: PostTypes) => {
   axios.defaults.withCredentials = true;
+  const [editUserPost, setEditUserPost] = useState<string>();
   const [showComments, setShowComments] = useState(false);
+  const [getComment, setGetComment] = useState<CommentTypes[]>([]);
   const [comment, setComment] = useState<string>();
   const [like, setLike] = useState(false);
   const getLocalUsername = localStorage.getItem("username");
@@ -75,13 +79,17 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
       console.log(error);
     }
   };
-  const checkLikes = async () => {
+  const check = async () => {
     try {
-      const checkForLikes = await axios.get(
+      const checkForData = await axios.get(
         process.env.NEXT_PUBLIC_BACKEND_URL + `/api/posts?_id=${_id}`
       );
 
-      if (await checkForLikes.data.post.likedby.includes(getLocalUsername)) {
+      // @ts-ignore
+      setEditUserPost(checkForData.data.post.post);
+      setGetComment(checkForData.data.post.comments);
+
+      if (await checkForData.data.post.likedby.includes(getLocalUsername)) {
         setLike(true);
       } else {
         setLike(false);
@@ -93,6 +101,8 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
   const editPost = async () => {
     try {
       const updatedPost = prompt("Update you post!");
+      // @ts-ignore
+      setEditUserPost(updatedPost);
       const edit = await axios.put(
         process.env.NEXT_PUBLIC_BACKEND_URL + "/api/posts",
         {
@@ -109,32 +119,16 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
     }
   };
 
-  const deletePost = async () => {
-    try {
-      const delete_post = await axios.patch(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/posts",
-        {
-          _id,
-        }
-      );
-
-      if (delete_post.status === 200) {
-        alert("Post has been deleted");
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   const addComment = async () => {
     try {
-      const add_comment = await axios.post(
-        process.env.NEXT_PUBLIC_BACKEND_URL + "/api/posts/comment",
-        {
+      const add_comment = await axios
+        .post(process.env.NEXT_PUBLIC_BACKEND_URL + "/api/posts/comment", {
           _id,
           comment,
-        }
-      );
+        })
+        .finally(() => {
+          setComment("");
+        });
 
       if (add_comment.status === 200) {
         alert(add_comment.data.message);
@@ -145,8 +139,9 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
   };
 
   useEffect(() => {
-    checkLikes();
-  }, [like]);
+    check();
+    setDeleteId(_id);
+  }, [like, editUserPost, getComment]);
 
   return (
     <div>
@@ -164,7 +159,7 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
                 <DropdownMenuItem onClick={() => editPost()}>
                   Edit
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => deletePost()}>
+                <DropdownMenuItem onClick={() => deletePost(_id)}>
                   Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
@@ -172,7 +167,7 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
           </div>
         </CardHeader>
         <CardContent>
-          <CardDescription>{post}</CardDescription>
+          <CardDescription>{editUserPost}</CardDescription>
         </CardContent>
         <CardFooter className="align-top">
           <div className="w-full">
@@ -211,7 +206,7 @@ const Post = ({ _id, username, post, likes, likedby, comments }: PostTypes) => {
                   </Button>
                 </div>
                 <div className="w-full mt-2 flex flex-col gap-2">
-                  {comments.map(
+                  {getComment.map(
                     ({ username, comment }: CommentTypes, index) => {
                       return (
                         <Card key={index}>

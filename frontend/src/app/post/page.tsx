@@ -3,11 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 import { SendHorizonal } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Post = () => {
   axios.defaults.withCredentials = true;
   const [post, setPost] = useState<string>();
+  const router = useRouter();
   const onSend = async () => {
     try {
       const sendPost = await axios.post(
@@ -19,6 +21,7 @@ const Post = () => {
 
       if (sendPost.status === 200) {
         alert("Post created!");
+        router.push("/");
       }
     } catch (error) {
       console.log(error);
