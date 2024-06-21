@@ -1,6 +1,6 @@
 ## Steps to run this project
 
-1. Select the folder you want to run thi projects
+1. Select the folder you want to run the projects
 2. Open the termial and type
 
 ```
